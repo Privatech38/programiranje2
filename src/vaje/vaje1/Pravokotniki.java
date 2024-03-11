@@ -1,4 +1,4 @@
-package vaje;
+package vaje.vaje1;
 
 public class Pravokotniki {
 
@@ -14,10 +14,7 @@ public class Pravokotniki {
             for (int j = 1; j <= sirina; j++) {
                 int current = i;
                 if (sirina >= 10) {
-                    current = j;
-                    if (j >= 10) {
-                        current -= 10;
-                    }
+                    current = j % 10;
                 }
                 System.out.print(current);
             }
