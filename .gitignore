@@ -1,4 +1,5 @@
 *.class
+*.p2
 
 ### IntelliJ IDEA ###
 out/
