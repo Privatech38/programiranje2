@@ -17,6 +17,12 @@ public class DN05 {
             case ("izpisi") -> izpisiSliko(preberiSliko(args[1]));
             case ("histogram") -> izpisiHistogram(preberiSliko(args[1]));
             case ("svetlost") -> System.out.printf("Srednja vrednost sivine na sliki %s je: %.2f\n", args[1], svetlostSlike(preberiSliko(args[1])));
+            // 2. Naloga
+            case ("zmanjsaj") -> izpisiSliko(zmanjsajSliko(preberiSliko(args[1])));
+            case ("rotiraj") -> izpisiSliko(rotirajSliko(preberiSliko(args[1])));
+            case ("zrcali") -> izpisiSliko(zrcaliSliko(preberiSliko(args[1])));
+            case ("vrstica") -> System.out.printf("Max razlika svetlo - temno je v %d. vrstici.\n", poisciMaxVrstico(preberiSliko(args[1])) + 1);
+
         }
     }
 
@@ -118,6 +124,64 @@ public class DN05 {
             }
         }
         return sum / (slika.length * slika[0].length);
+    }
+
+    // 2. Naloga
+
+    private static int[][] zmanjsajSliko(int[][] slika) {
+        if (slika[0].length < 3 || slika.length < 3) {
+            return slika;
+        }
+        final int x = (int) (slika[0].length / 2.0d);
+        final int y = (int) (slika.length / 2.0d);
+        int[][] pomanjsanaSlika = new int[y][x];
+        for (int i = 0; i < y; i++) {
+            for (int j = 0; j < x; j++) {
+                pomanjsanaSlika[i][j] = (slika[i*2][j*2] + slika[i*2 + 1][j*2] + slika[i*2][j*2 + 1] + slika[i*2 + 1][j*2 + 1]) / 4;
+            }
+        }
+        return pomanjsanaSlika;
+    }
+
+    private static int[][] rotirajSliko(int[][] slika) {
+        int[][] obrnjenaSlika = new int[slika[0].length][slika.length];
+        for (int i = 0; i < slika.length; i++) {
+            for (int j = 0; j < slika[0].length; j++) {
+                obrnjenaSlika[j][slika.length - i - 1] = slika[i][j];
+            }
+        }
+        return obrnjenaSlika;
+    }
+
+    private static int[][] zrcaliSliko(int[][] slika) {
+        int[][] zrcaljenaSlika = new int[slika.length][slika[0].length];
+        for (int i = 0; i < slika.length; i++) {
+            for (int j = 0; j < slika[0].length; j++) {
+                zrcaljenaSlika[i][slika[0].length - 1 - j] = slika[i][j];
+            }
+        }
+        return zrcaljenaSlika;
+    }
+
+    private static int poisciMaxVrstico(int[][] slika) {
+        int index = 0, diff = 0;
+        for (int i = 0; i < slika.length; i++) {
+            int min = 255;
+            int max = 0;
+            for (int pixel : slika[i]) {
+                if (pixel > max) {
+                    max = pixel;
+                }
+                if (pixel < min) {
+                    min = pixel;
+                }
+            }
+            if (diff < max - min) {
+                index = i;
+                diff = max - min;
+            }
+        }
+        return index;
     }
 
 }
