@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,7 +21,9 @@ public class DN05 {
             case ("rotiraj") -> izpisiSliko(rotirajSliko(preberiSliko(args[1])));
             case ("zrcali") -> izpisiSliko(zrcaliSliko(preberiSliko(args[1])));
             case ("vrstica") -> System.out.printf("Max razlika svetlo - temno je v %d. vrstici.\n", poisciMaxVrstico(preberiSliko(args[1])) + 1);
-
+            // 3. Naloga
+            case ("barvna") -> izpisiBarvnoSliko(preberiBarvnoSliko(args[1]));
+            case ("sivinska") -> izpisiSliko(pretvoriVSivinsko(preberiBarvnoSliko(args[1])));
         }
     }
 
@@ -183,5 +184,106 @@ public class DN05 {
         }
         return index;
     }
+
+    // 3. Naloga
+
+    private static int[][][] preberiBarvnoSliko(String ime) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(ime))) {
+            // Check if empty
+            if (Files.size(Path.of(ime)) == 0) {
+                System.out.println("Napaka: Datoteka " + ime + " je prazna.");
+                return new int[0][][];
+            }
+            // Check if correct format
+            final String metaData = bufferedReader.readLine();
+            Pattern pattern = Pattern.compile("P2B: (?<x>\\S+) x (?<y>\\S+)");
+            Matcher matcher = pattern.matcher(metaData);
+            if (!matcher.matches()) {
+                System.out.println("Napaka: datoteka " + ime + " ni v formatu P2B.");
+                return new int[0][][];
+            }
+            // Check if velikost slike v pravem formatu
+            Pattern numberPattern = Pattern.compile("-?\\d+");
+            if (!numberPattern.matcher(matcher.group("x")).matches() || !numberPattern.matcher(matcher.group("y")).matches()) {
+                System.out.println("Napaka: datoteka " + ime + " ni v formatu P2B (velikost slike ni pravilna).");
+                return new int[0][][];
+            }
+            // Check if 0 or negative
+            int x;
+            int y;
+            try {
+                x = Integer.parseInt(matcher.group("x"));
+                y = Integer.parseInt(matcher.group("y"));
+            } catch (NumberFormatException e) {
+                System.out.println("Napaka: datoteka " + ime + " ni v formatu P2B (velikost slike ni pravilna).");
+                return new int[0][][];
+            }
+            if (x <= 0 || y <= 0) {
+                System.out.println("Napaka: datoteka " + ime + " ni v formatu P2B (velikost slike je 0 ali negativna).");
+                return new int[0][][];
+            }
+            // Process bytes
+            String pixelData = bufferedReader.readLine();
+            if (pixelData == null) {
+                System.out.println("Napaka: datoteka " + ime + " vsebuje premalo podatkov.");
+                return new int[0][][];
+            }
+            String[] byteStrings = pixelData.split(" ");
+            // Check if there are enough bytes
+            if (byteStrings.length < x * y) {
+                System.out.println("Napaka: datoteka " + ime + " vsebuje premalo podatkov.");
+                return new int[0][][];
+            }
+            // Check if all bytes are valid
+            int[][][] pixels = new int[y][x][3];
+            for (int i = 0; i < y; i++) {
+                for (int j = 0; j < x; j++) {
+                    int pixel = Integer.parseInt(byteStrings[i*x + j]);
+                    for (int k = 0; k < 3; k++) {
+                        int maska = 1023 << 10 * k;
+                        final int colorBits = (pixel & maska) >> 10 * k;
+                        if (colorBits < 0 || colorBits > 1023) {
+                            System.out.println("Napaka: datoteka " + ime + " vsebuje podatke izven obsega 0 do 67108863.");
+                            return new int[0][][];
+                        }
+                        pixels[i][j][k] = colorBits;
+                    }
+                }
+            }
+            return pixels;
+        } catch (FileNotFoundException e) {
+            System.out.println("Napaka: datoteka " + ime + " ne obstaja.");
+            return new int[0][][];
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new int[0][][];
+    }
+
+    private static void izpisiBarvnoSliko(int[][][] slika) {
+        if (slika.length == 0) {
+            return;
+        }
+        System.out.printf("velikost slike: %d x %d\n", slika[0].length, slika.length);
+        for (int[][] row : slika) {
+            for (int[] pixel : row) {
+                System.out.printf("(%4d,%4d,%4d) ", pixel[2], pixel[1], pixel[0]);
+            }
+            System.out.println();
+        }
+    }
+
+    private static int[][] pretvoriVSivinsko(int[][][] slika) {
+        int[][] sivinskaSlika = new int[slika.length][slika[0].length];
+        final float ratio = 255f / 1023f / 3;
+        for (int i = 0; i < slika.length; i++) {
+            for (int j = 0; j < slika[0].length; j++) {
+                sivinskaSlika[i][j] = (int) (ratio * (slika[i][j][0] + slika[i][j][1] + slika[i][j][2]));
+            }
+        }
+        return sivinskaSlika;
+    }
+
+
 
 }
