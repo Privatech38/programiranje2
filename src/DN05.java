@@ -4,8 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +23,8 @@ public class DN05 {
             // 3. Naloga
             case ("barvna") -> izpisiBarvnoSliko(preberiBarvnoSliko(args[1]));
             case ("sivinska") -> izpisiSliko(pretvoriVSivinsko(preberiBarvnoSliko(args[1])));
+            // 4. Naloga
+            case ("uredi") -> preberiVseInIzpisi(Arrays.copyOfRange(args, 1, args.length));
         }
     }
 
@@ -282,6 +283,20 @@ public class DN05 {
             }
         }
         return sivinskaSlika;
+    }
+
+    // 4. Naloga
+    private static void preberiVseInIzpisi(String[] imenaSlik) {
+        HashMap<String, Integer> svetlosti = new HashMap<>();
+        Arrays.stream(imenaSlik).forEach(s -> svetlosti.put(s, (int) Math.round(svetlostSlike(preberiSliko(s)))));
+        svetlosti.entrySet().stream().sorted((e1, e2) -> {
+            final int compared = e1.getValue().compareTo(e2.getValue());
+            if (compared != 0) {
+                return compared * (-1);
+            } else {
+                return e1.getKey().toLowerCase().compareTo(e2.getKey().toLowerCase());
+            }
+        }).forEach(e -> System.out.printf("%s (%d)\n", e.getKey(), e.getValue()));
     }
 
 
