@@ -4,14 +4,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DN05 {
 
     public static void main(String[] args) {
-        if (args[0].equals("izpisi")) {
-            izpisiSliko(preberiSliko(args[1]));
+        switch (args[0]) {
+            case ("izpisi") -> izpisiSliko(preberiSliko(args[1]));
+            case ("histogram") -> izpisiHistogram(preberiSliko(args[1]));
+            case ("svetlost") -> System.out.printf("Srednja vrednost sivine na sliki %s je: %.2f\n", args[1], svetlostSlike(preberiSliko(args[1])));
         }
     }
 
@@ -95,6 +100,24 @@ public class DN05 {
             }
             System.out.println();
         }
+    }
+
+    private static void izpisiHistogram(int[][] slika) {
+        TreeMap<Integer, Integer> frequency = new TreeMap<>();
+        Arrays.stream(slika).forEach(ia -> Arrays.stream(ia).forEach(i -> frequency.merge(i, 1, (v1, v2) -> v1 + 1)));
+        // Print
+        System.out.println("sivina : # pojavitev");
+        frequency.forEach((k, v) -> System.out.printf("  %3d  :   %-3d\n", k, v));
+    }
+
+    private static double svetlostSlike(int[][] slika) {
+        double sum = 0;
+        for (int[] row : slika) {
+            for (int pixel : row) {
+                sum += pixel;
+            }
+        }
+        return sum / (slika.length * slika[0].length);
     }
 
 }
