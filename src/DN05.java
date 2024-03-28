@@ -275,10 +275,10 @@ public class DN05 {
 
     private static int[][] pretvoriVSivinsko(int[][][] slika) {
         int[][] sivinskaSlika = new int[slika.length][slika[0].length];
-        final float ratio = 255f / 1023f / 3;
+        final float ratio = 255.0f / 1023.0f;
         for (int i = 0; i < slika.length; i++) {
             for (int j = 0; j < slika[0].length; j++) {
-                sivinskaSlika[i][j] = (int) (ratio * (slika[i][j][0] + slika[i][j][1] + slika[i][j][2]));
+                sivinskaSlika[i][j] = (int) (ratio * ((int) ((slika[i][j][0] + slika[i][j][1] + slika[i][j][2]) / 3)));
             }
         }
         return sivinskaSlika;
