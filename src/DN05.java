@@ -342,9 +342,9 @@ public class DN05 {
         int[][] novaSlika = new int[slika.length - 2][slika[0].length - 2];
         for (int i = 1; i < slika.length - 1; i++) {
             for (int j = 1; j < slika[0].length - 1; j++) {
-                novaSlika[i - 1][j - 1] = (int) (0.0625f * slika[i - 1][j - 1] + 0.125f * slika[i - 1][j] + 0.0625f * slika[i - 1][j + 1]
-                                                + 0.125f * slika[i][j - 1] + 0.25f * slika[i][j] + 0.125f * slika[i][j + 1]
-                                                + 0.0625f * slika[i + 1][j - 1] + 0.125f * slika[i + 1][j] + 0.0625f * slika[i + 1][j + 1]);
+                novaSlika[i - 1][j - 1] = (int) (Math.round(slika[i - 1][j - 1] / 16d) + Math.round(slika[i - 1][j] / 8d) + Math.round(slika[i - 1][j + 1] / 16d)
+                                                + Math.round(slika[i][j - 1] / 8d) + Math.round(slika[i][j] / 4d) + Math.round(slika[i][j + 1] / 8d)
+                                                + Math.round(slika[i + 1][j - 1] / 16d) + Math.round(slika[i + 1][j] / 8d) + Math.round(slika[i + 1][j + 1] / 16d));
             }
         }
         return novaSlika;
