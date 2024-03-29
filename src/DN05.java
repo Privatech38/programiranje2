@@ -28,6 +28,7 @@ public class DN05 {
             // 5. Naloga
             case ("jedro") -> konvolucijaJedro(preberiSliko(args[1]));
             case ("glajenje") -> konvolucijaGlajenje(preberiSliko(args[1]));
+            case ("robovi") -> konvolucijaRobovi(preberiSliko(args[1]));
         }
     }
 
@@ -307,7 +308,7 @@ public class DN05 {
         izpisiSliko(novaSlika);
     }
 
-    private static void konvolucijaGlajenje(int[][] slika) {
+    private static int[][] razsiriSliko(int[][] slika) {
         // Raziširi sliko
         int[][] razsirjenaSlika = new int[slika.length + 2][slika[0].length + 2];
         for (int y = 0; y < slika.length; y++) {
@@ -337,7 +338,11 @@ public class DN05 {
         razsirjenaSlika[slika.length + 1][0] = slika[slika.length - 1][0];
         razsirjenaSlika[slika.length + 1][slika[0].length + 1] = slika[slika.length - 1][slika[0].length - 1];
         // Replace
-        slika = razsirjenaSlika;
+        return razsirjenaSlika;
+    }
+
+    private static void konvolucijaGlajenje(int[][] slika) {
+        slika = razsiriSliko(slika);
         // Glajenje slike
         int[][] novaSlika = new int[slika.length - 2][slika[0].length - 2];
         for (int i = 1; i < slika.length - 1; i++) {
@@ -350,8 +355,45 @@ public class DN05 {
         izpisiSliko(novaSlika);
     }
 
-
-
-
-
+    private static void konvolucijaRobovi(int[][] slika) {
+        int[][] razsirjenaSlika = razsiriSliko(slika);
+        // Navpični robovi
+        int[][] roboviNavpicno = new int[slika.length][slika[0].length];
+        for (int i = 1; i < razsirjenaSlika.length - 1; i++) {
+            for (int j = 1; j < razsirjenaSlika[0].length - 1; j++) {
+                roboviNavpicno[i - 1][j - 1] = razsirjenaSlika[i - 1][j - 1] + razsirjenaSlika[i - 1][j + 1] * (-1)
+                                                + razsirjenaSlika[i][j - 1] * 2 + razsirjenaSlika[i][j + 1] * (-2)
+                                                + razsirjenaSlika[i + 1][j - 1] + razsirjenaSlika[i + 1][j + 1] * (-1);
+            }
+        }
+        // Vodoravni robovi
+        int[][] roboviVodoravno = new int[slika.length][slika[0].length];
+        for (int i = 1; i < razsirjenaSlika.length - 1; i++) {
+            for (int j = 1; j < razsirjenaSlika[0].length - 1; j++) {
+                roboviVodoravno[i - 1][j - 1] = razsirjenaSlika[i - 1][j - 1] + razsirjenaSlika[i - 1][j] * 2 + razsirjenaSlika[i - 1][j + 1]
+                                                + razsirjenaSlika[i + 1][j - 1] * (-1) + razsirjenaSlika[i + 1][j] * (-2) + razsirjenaSlika[i + 1][j + 1] * (-1);
+            }
+        }
+        // Združi robove
+        int[][] roboviSkupaj = new int[slika.length][slika[0].length];
+        int maxValue = 0;
+        for (int y = 0; y < slika.length; y++) {
+            for (int x = 0; x < slika[0].length; x++) {
+                int current = (int) Math.round(Math.sqrt(Math.pow(roboviNavpicno[y][x], 2) + Math.pow(roboviVodoravno[y][x], 2)));
+                roboviSkupaj[y][x] = current;
+                if (current > maxValue) {
+                    maxValue = current;
+                }
+            }
+        }
+        // Map values
+        final float ratio = 255f / maxValue;
+        int[][] roboviKoncni = new int[slika.length][slika[0].length];
+        for (int y = 0; y < roboviSkupaj.length; y++) {
+            for (int x = 0; x < roboviSkupaj[0].length; x++) {
+                roboviKoncni[y][x] = (int) Math.round(ratio * roboviSkupaj[y][x]);
+            }
+        }
+        izpisiSliko(roboviKoncni);
+    }
 }
