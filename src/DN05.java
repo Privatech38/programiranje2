@@ -25,6 +25,9 @@ public class DN05 {
             case ("sivinska") -> izpisiSliko(pretvoriVSivinsko(preberiBarvnoSliko(args[1])));
             // 4. Naloga
             case ("uredi") -> preberiVseInIzpisi(Arrays.copyOfRange(args, 1, args.length));
+            // 5. Naloga
+            case ("jedro") -> izpisiSliko(konvolucijaJedro(preberiSliko(args[1])));
+            case ("glajenje") -> izpisiSliko(konvolucijaGlajenje(preberiSliko(args[1])));
         }
     }
 
@@ -289,6 +292,62 @@ public class DN05 {
     private static void preberiVseInIzpisi(String[] imenaSlik) {
         Arrays.stream(imenaSlik).map(s -> new AbstractMap.SimpleEntry<String, Integer>(s, (int) Math.round(svetlostSlike(preberiSliko(s)))))
                 .sorted(Comparator.<Map.Entry<String, Integer>>comparingInt(Map.Entry::getValue).reversed().thenComparing(e -> e.getKey().toLowerCase())).forEach(e -> System.out.printf("%s (%d)\n", e.getKey(), e.getValue()));
+    }
+
+    // 5. Naloga
+    private static int[][] konvolucijaJedro(int[][] slika) {
+        int[][] novaSlika = new int[slika.length - 2][slika[0].length - 2];
+        for (int i = 1; i < slika.length - 1; i++) {
+            for (int j = 1; j < slika[0].length - 1; j++) {
+                novaSlika[i - 1][j - 1] = slika[i - 1][j - 1] + slika[i - 1][j] + slika[i - 1][j + 1]
+                                        + slika[i][j - 1] + slika[i][j] + slika[i][j + 1]
+                                        + slika[i + 1][j - 1] + slika[i + 1][j] + slika[i + 1][j + 1];
+            }
+        }
+        return novaSlika;
+    }
+
+    private static int[][] konvolucijaGlajenje(int[][] slika) {
+        // Raziširi sliko
+        int[][] razsirjenaSlika = new int[slika.length + 2][slika[0].length + 2];
+        for (int y = 0; y < slika.length; y++) {
+            for (int x = 0; x < slika[0].length; x++) {
+                razsirjenaSlika[y + 1][x + 1] = slika[y][x];
+                // Left edge
+                if (x == 0) {
+                    razsirjenaSlika[y + 1][x] = slika[y][x];
+                }
+                // Right edge
+                if (x == slika[0].length - 1) {
+                    razsirjenaSlika[y + 1][x + 2] = slika[y][x];
+                }
+                // Top
+                if (y == 0) {
+                    razsirjenaSlika[y][x + 1] = slika[y][x];
+                }
+                // Bottom row
+                if (y == slika.length - 1) {
+                    razsirjenaSlika[y + 2][x + 1] = slika[y][x];
+                }
+            }
+        }
+        // Corners
+        razsirjenaSlika[0][0] = slika[0][0];
+        razsirjenaSlika[0][slika[0].length + 1] = slika[0][slika[0].length - 1];
+        razsirjenaSlika[slika.length + 1][0] = slika[slika.length - 1][0];
+        razsirjenaSlika[slika.length + 1][slika[0].length + 1] = slika[slika.length - 1][slika[0].length - 1];
+        // Replace
+        slika = razsirjenaSlika;
+        // Glajenje slike
+        int[][] novaSlika = new int[slika.length - 2][slika[0].length - 2];
+        for (int i = 1; i < slika.length - 1; i++) {
+            for (int j = 1; j < slika[0].length - 1; j++) {
+                novaSlika[i - 1][j - 1] = (int) (0.0625f * slika[i - 1][j - 1] + 0.125f * slika[i - 1][j] + 0.0625f * slika[i - 1][j + 1]
+                                                + 0.125f * slika[i][j - 1] + 0.25f * slika[i][j] + 0.125f * slika[i][j + 1]
+                                                + 0.0625f * slika[i + 1][j - 1] + 0.125f * slika[i + 1][j] + 0.0625f * slika[i + 1][j + 1]);
+            }
+        }
+        return novaSlika;
     }
 
 
