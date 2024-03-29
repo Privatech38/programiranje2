@@ -26,8 +26,8 @@ public class DN05 {
             // 4. Naloga
             case ("uredi") -> preberiVseInIzpisi(Arrays.copyOfRange(args, 1, args.length));
             // 5. Naloga
-            case ("jedro") -> izpisiSliko(konvolucijaJedro(preberiSliko(args[1])));
-            case ("glajenje") -> izpisiSliko(konvolucijaGlajenje(preberiSliko(args[1])));
+            case ("jedro") -> konvolucijaJedro(preberiSliko(args[1]));
+            case ("glajenje") -> konvolucijaGlajenje(preberiSliko(args[1]));
         }
     }
 
@@ -295,7 +295,7 @@ public class DN05 {
     }
 
     // 5. Naloga
-    private static int[][] konvolucijaJedro(int[][] slika) {
+    private static void konvolucijaJedro(int[][] slika) {
         int[][] novaSlika = new int[slika.length - 2][slika[0].length - 2];
         for (int i = 1; i < slika.length - 1; i++) {
             for (int j = 1; j < slika[0].length - 1; j++) {
@@ -304,10 +304,10 @@ public class DN05 {
                                         + slika[i + 1][j - 1] + slika[i + 1][j] + slika[i + 1][j + 1];
             }
         }
-        return novaSlika;
+        izpisiSliko(novaSlika);
     }
 
-    private static int[][] konvolucijaGlajenje(int[][] slika) {
+    private static void konvolucijaGlajenje(int[][] slika) {
         // Raziširi sliko
         int[][] razsirjenaSlika = new int[slika.length + 2][slika[0].length + 2];
         for (int y = 0; y < slika.length; y++) {
@@ -347,8 +347,10 @@ public class DN05 {
                                                 + Math.round(slika[i + 1][j - 1] / 16d) + Math.round(slika[i + 1][j] / 8d) + Math.round(slika[i + 1][j + 1] / 16d));
             }
         }
-        return novaSlika;
+        izpisiSliko(novaSlika);
     }
+
+
 
 
 
