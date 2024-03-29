@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class DN05 {
 
@@ -287,9 +288,8 @@ public class DN05 {
 
     // 4. Naloga
     private static void preberiVseInIzpisi(String[] imenaSlik) {
-        HashMap<String, Integer> svetlosti = new HashMap<>();
-        Arrays.stream(imenaSlik).forEach(s -> svetlosti.put(s, (int) Math.round(svetlostSlike(preberiSliko(s)))));
-        svetlosti.entrySet().stream().sorted((e1, e2) -> {
+        Arrays.stream(imenaSlik).map(s -> new AbstractMap.SimpleEntry<String, Integer>(s, (int) Math.round(svetlostSlike(preberiSliko(s)))))
+                .sorted((e1, e2) -> {
             final int compared = e1.getValue().compareTo(e2.getValue());
             if (compared != 0) {
                 return compared * (-1);
