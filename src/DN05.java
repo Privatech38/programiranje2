@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class DN05 {
 
@@ -26,6 +25,10 @@ public class DN05 {
             case ("sivinska") -> izpisiSliko(pretvoriVSivinsko(preberiBarvnoSliko(args[1])));
             // 4. Naloga
             case ("uredi") -> preberiVseInIzpisi(Arrays.copyOfRange(args, 1, args.length));
+            // 5. Naloga
+            case ("jedro") -> konvolucijaJedro(preberiSliko(args[1]));
+            case ("glajenje") -> konvolucijaGlajenje(preberiSliko(args[1]));
+            case ("robovi") -> konvolucijaRobovi(preberiSliko(args[1]));
         }
     }
 
@@ -289,16 +292,108 @@ public class DN05 {
     // 4. Naloga
     private static void preberiVseInIzpisi(String[] imenaSlik) {
         Arrays.stream(imenaSlik).map(s -> new AbstractMap.SimpleEntry<String, Integer>(s, (int) Math.round(svetlostSlike(preberiSliko(s)))))
-                .sorted((e1, e2) -> {
-            final int compared = e1.getValue().compareTo(e2.getValue());
-            if (compared != 0) {
-                return compared * (-1);
-            } else {
-                return e1.getKey().toLowerCase().compareTo(e2.getKey().toLowerCase());
-            }
-        }).forEach(e -> System.out.printf("%s (%d)\n", e.getKey(), e.getValue()));
+                .sorted(Comparator.<Map.Entry<String, Integer>>comparingInt(Map.Entry::getValue).reversed().thenComparing(e -> e.getKey().toLowerCase())).forEach(e -> System.out.printf("%s (%d)\n", e.getKey(), e.getValue()));
     }
 
+    // 5. Naloga
+    private static void konvolucijaJedro(int[][] slika) {
+        int[][] novaSlika = new int[slika.length - 2][slika[0].length - 2];
+        for (int i = 1; i < slika.length - 1; i++) {
+            for (int j = 1; j < slika[0].length - 1; j++) {
+                novaSlika[i - 1][j - 1] = slika[i - 1][j - 1] + slika[i - 1][j] + slika[i - 1][j + 1]
+                                        + slika[i][j - 1] + slika[i][j] + slika[i][j + 1]
+                                        + slika[i + 1][j - 1] + slika[i + 1][j] + slika[i + 1][j + 1];
+            }
+        }
+        izpisiSliko(novaSlika);
+    }
 
+    private static int[][] razsiriSliko(int[][] slika) {
+        // Raziširi sliko
+        int[][] razsirjenaSlika = new int[slika.length + 2][slika[0].length + 2];
+        for (int y = 0; y < slika.length; y++) {
+            for (int x = 0; x < slika[0].length; x++) {
+                razsirjenaSlika[y + 1][x + 1] = slika[y][x];
+                // Left edge
+                if (x == 0) {
+                    razsirjenaSlika[y + 1][x] = slika[y][x];
+                }
+                // Right edge
+                if (x == slika[0].length - 1) {
+                    razsirjenaSlika[y + 1][x + 2] = slika[y][x];
+                }
+                // Top
+                if (y == 0) {
+                    razsirjenaSlika[y][x + 1] = slika[y][x];
+                }
+                // Bottom row
+                if (y == slika.length - 1) {
+                    razsirjenaSlika[y + 2][x + 1] = slika[y][x];
+                }
+            }
+        }
+        // Corners
+        razsirjenaSlika[0][0] = slika[0][0];
+        razsirjenaSlika[0][slika[0].length + 1] = slika[0][slika[0].length - 1];
+        razsirjenaSlika[slika.length + 1][0] = slika[slika.length - 1][0];
+        razsirjenaSlika[slika.length + 1][slika[0].length + 1] = slika[slika.length - 1][slika[0].length - 1];
+        // Replace
+        return razsirjenaSlika;
+    }
 
+    private static void konvolucijaGlajenje(int[][] slika) {
+        slika = razsiriSliko(slika);
+        // Glajenje slike
+        int[][] novaSlika = new int[slika.length - 2][slika[0].length - 2];
+        for (int i = 1; i < slika.length - 1; i++) {
+            for (int j = 1; j < slika[0].length - 1; j++) {
+                novaSlika[i - 1][j - 1] = (int) (Math.round(slika[i - 1][j - 1] / 16d) + Math.round(slika[i - 1][j] / 8d) + Math.round(slika[i - 1][j + 1] / 16d)
+                                                + Math.round(slika[i][j - 1] / 8d) + Math.round(slika[i][j] / 4d) + Math.round(slika[i][j + 1] / 8d)
+                                                + Math.round(slika[i + 1][j - 1] / 16d) + Math.round(slika[i + 1][j] / 8d) + Math.round(slika[i + 1][j + 1] / 16d));
+            }
+        }
+        izpisiSliko(novaSlika);
+    }
+
+    private static void konvolucijaRobovi(int[][] slika) {
+        int[][] razsirjenaSlika = razsiriSliko(slika);
+        // Navpični robovi
+        int[][] roboviNavpicno = new int[slika.length][slika[0].length];
+        for (int i = 1; i < razsirjenaSlika.length - 1; i++) {
+            for (int j = 1; j < razsirjenaSlika[0].length - 1; j++) {
+                roboviNavpicno[i - 1][j - 1] = razsirjenaSlika[i - 1][j - 1] + razsirjenaSlika[i - 1][j + 1] * (-1)
+                                                + razsirjenaSlika[i][j - 1] * 2 + razsirjenaSlika[i][j + 1] * (-2)
+                                                + razsirjenaSlika[i + 1][j - 1] + razsirjenaSlika[i + 1][j + 1] * (-1);
+            }
+        }
+        // Vodoravni robovi
+        int[][] roboviVodoravno = new int[slika.length][slika[0].length];
+        for (int i = 1; i < razsirjenaSlika.length - 1; i++) {
+            for (int j = 1; j < razsirjenaSlika[0].length - 1; j++) {
+                roboviVodoravno[i - 1][j - 1] = razsirjenaSlika[i - 1][j - 1] + razsirjenaSlika[i - 1][j] * 2 + razsirjenaSlika[i - 1][j + 1]
+                                                + razsirjenaSlika[i + 1][j - 1] * (-1) + razsirjenaSlika[i + 1][j] * (-2) + razsirjenaSlika[i + 1][j + 1] * (-1);
+            }
+        }
+        // Združi robove
+        int[][] roboviSkupaj = new int[slika.length][slika[0].length];
+        int maxValue = 0;
+        for (int y = 0; y < slika.length; y++) {
+            for (int x = 0; x < slika[0].length; x++) {
+                int current = (int) Math.round(Math.sqrt(Math.pow(roboviNavpicno[y][x], 2) + Math.pow(roboviVodoravno[y][x], 2)));
+                roboviSkupaj[y][x] = current;
+                if (current > maxValue) {
+                    maxValue = current;
+                }
+            }
+        }
+        // Map values
+        final float ratio = 255f / maxValue;
+        int[][] roboviKoncni = new int[slika.length][slika[0].length];
+        for (int y = 0; y < roboviSkupaj.length; y++) {
+            for (int x = 0; x < roboviSkupaj[0].length; x++) {
+                roboviKoncni[y][x] = (int) Math.round(ratio * roboviSkupaj[y][x]);
+            }
+        }
+        izpisiSliko(roboviKoncni);
+    }
 }
