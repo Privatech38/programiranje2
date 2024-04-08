@@ -78,9 +78,9 @@ public class NakupovalniSeznam {
                 case '6': // izpiši seznam
                     zbirke.Seznam.izpisiSeznam();
                     break;
-//                case '7': // izpiši 64-bitno
-//                    zbirke.Seznam.izpisiSeznam64Bit();
-//                    break;
+                case '7': // izpiši 64-bitno
+                    zbirke.Seznam.izpisiSeznam64Bit();
+                    break;
                 case '8': // uniči seznam
                     if (zbirke.Seznam.uniciSeznam())
                         System.out.println("Seznam je uničen.");

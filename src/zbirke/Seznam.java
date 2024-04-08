@@ -1,5 +1,7 @@
 package zbirke;
 
+import izpis.Znaki;
+
 public class Seznam {
 
     private static String[] strings;
@@ -33,7 +35,9 @@ public class Seznam {
             return false;
         }
         if (dolzina == strings.length) {
-            return false;
+            String[] kopija = strings.clone();
+            strings = new String[kopija.length * 2];
+            System.arraycopy(kopija, 0, strings, 0, kopija.length);
         }
         strings[dolzina] = element;
         dolzina++;
@@ -131,6 +135,19 @@ public class Seznam {
         dolzina = 0;
         return true;
     }
+
+    public static void izpisiSeznam64Bit() {
+        if (strings == null) {
+            System.out.println("NAPAKA: Seznam ne obstaja.");
+        }
+        if (dolzina == 0) {
+            System.out.println("Seznam je prazen (nima elementov).");
+        }
+        for (int i = 0; i < dolzina; i++) {
+            Znaki.izpisi64bit(i + 1 + ":" + strings[i]);
+        }
+    }
+
 
 
 
