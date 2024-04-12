@@ -1,5 +1,6 @@
 *.class
 *.p2
+StdDraw.java
 
 ### IntelliJ IDEA ###
 out/
