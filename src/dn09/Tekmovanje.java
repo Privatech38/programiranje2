@@ -9,9 +9,12 @@ public class Tekmovanje {
     private final ArrayList<Tekmovalec> seznamTekmovalcev;
     private final ArrayList<Glas> seznamGlasov;
 
+    private Kriterij kriterij;
+
     public Tekmovanje(ArrayList<Tekmovalec> seznamTekmovalcev, ArrayList<Glas> seznamGlasov) {
         this.seznamTekmovalcev = seznamTekmovalcev;
         this.seznamGlasov = seznamGlasov;
+        this.kriterij = new OsnovniKriterij();
     }
 
     public ArrayList<Tekmovalec> getSeznamTekmovalcev() {
@@ -20,6 +23,14 @@ public class Tekmovanje {
 
     public ArrayList<Glas> getSeznamGlasov() {
         return seznamGlasov;
+    }
+
+    public Kriterij getKriterij() {
+        return kriterij;
+    }
+
+    public void setKriterij(Kriterij kriterij) {
+        this.kriterij = kriterij;
     }
 
     public void izpisiTekmovalce() {
@@ -38,6 +49,19 @@ public class Tekmovanje {
         }
         System.out.println("Seznam glasov:");
         this.seznamGlasov.forEach(glas -> System.out.println(glas.toString()));
+    }
+
+    public int steviloTock(String drzava) {
+        return this.kriterij.steviloTock(this, drzava);
+    }
+
+    public void izpisiTocke() {
+        if (this.seznamTekmovalcev.isEmpty()) {
+            System.out.println("Seznam tekmovalcev je prazen.");
+            return;
+        }
+        System.out.println("Seznam tekmovalcev in njihovih tock:");
+        this.seznamTekmovalcev.forEach(t -> System.out.println(t.toString() + ": " + this.steviloTock(t.getDrzava()) + "t"));
     }
 
     public static Tekmovanje izDatotek(String datotekaTekmovalci, String datotekaGlasovi) {

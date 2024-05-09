@@ -13,6 +13,7 @@ public class DN09 {
                 System.out.println();
                 tekmovanje.izpisiGlasove();
             }
+            case "izpisiTocke" -> Tekmovanje.izDatotek(args[1], args[2]).izpisiTocke();
         }
     }
 
