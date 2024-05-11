@@ -2,19 +2,21 @@ package dn09;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 public class Tekmovanje {
 
     private final ArrayList<Tekmovalec> seznamTekmovalcev;
     private final ArrayList<Glas> seznamGlasov;
-
     private Kriterij kriterij;
+    private boolean urejeno;
 
     public Tekmovanje(ArrayList<Tekmovalec> seznamTekmovalcev, ArrayList<Glas> seznamGlasov) {
         this.seznamTekmovalcev = seznamTekmovalcev;
         this.seznamGlasov = seznamGlasov;
         this.kriterij = new OsnovniKriterij();
+        this.urejeno = false;
     }
 
     public ArrayList<Tekmovalec> getSeznamTekmovalcev() {
@@ -31,6 +33,7 @@ public class Tekmovanje {
 
     public void setKriterij(Kriterij kriterij) {
         this.kriterij = kriterij;
+        this.urejeno = false;
     }
 
     public void izpisiTekmovalce() {
@@ -62,6 +65,34 @@ public class Tekmovanje {
         }
         System.out.println("Seznam tekmovalcev in njihovih tock:");
         this.seznamTekmovalcev.forEach(t -> System.out.println(t.toString() + ": " + this.steviloTock(t.getDrzava()) + "t"));
+    }
+
+    public Tekmovalec getZmagovalec() {
+        this.urediPoTockah();
+        return seznamTekmovalcev.stream().max((t1, t2) -> Integer.compare(this.steviloTock(t1.getDrzava()), this.steviloTock(t2.getDrzava()))).get();
+    }
+
+    public void urediPoTockah() {
+        seznamTekmovalcev.sort((t1, t2) -> Integer.compare(this.steviloTock(t2.getDrzava()), this.steviloTock(t1.getDrzava())));
+        this.urejeno = true;
+    }
+
+    public int getMesto(String drzava) {
+        this.urediPoTockah();
+        for (Tekmovalec tekmovalec : this.seznamTekmovalcev) {
+            if (tekmovalec.getDrzava().equalsIgnoreCase(drzava)) {
+                return this.seznamTekmovalcev.indexOf(tekmovalec) + 1;
+            }
+        }
+        return -1;
+    }
+
+    public void izpisiRezultateUrejeno(int topK) {
+        this.urediPoTockah();
+        System.out.println("Najboljse uvrsceni tekmovalci:");
+        for (Tekmovalec tekmovalec : (topK > this.seznamTekmovalcev.size() ? this.seznamTekmovalcev : this.seznamTekmovalcev.subList(0, topK))) {
+            System.out.printf("%d. %s: %dt\n", this.seznamTekmovalcev.indexOf(tekmovalec) + 1, tekmovalec.toString(), this.steviloTock(tekmovalec.getDrzava()));
+        }
     }
 
     public static Tekmovanje izDatotek(String datotekaTekmovalci, String datotekaGlasovi) {

@@ -14,6 +14,7 @@ public class DN09 {
                 tekmovanje.izpisiGlasove();
             }
             case "izpisiTocke" -> Tekmovanje.izDatotek(args[1], args[2]).izpisiTocke();
+            case  "najboljse" -> Tekmovanje.izDatotek(args[1], args[2]).izpisiRezultateUrejeno(Integer.parseInt(args[3]));
         }
     }
 
