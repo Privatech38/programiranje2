@@ -2,6 +2,7 @@ package dn09;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
@@ -99,7 +100,16 @@ public class Tekmovanje {
         try (BufferedReader readerTekmovalci = new BufferedReader(new FileReader(datotekaTekmovalci));
             BufferedReader readerGlasovi = new BufferedReader(new FileReader(datotekaGlasovi))) {
             return new Tekmovanje(readerTekmovalci.lines().skip(1).filter(l -> !l.isBlank()).map(l -> new Tekmovalec(l.split(";")[1], l.split(";")[2], l.split(";")[3])).collect(Collectors.toCollection(ArrayList::new)),
-                    readerGlasovi.lines().skip(1).filter(l -> !l.isBlank()).map(l -> new Glas(l.split(";")[2], l.split(";")[3], Integer.parseInt(l.split(";")[4]))).collect(Collectors.toCollection(ArrayList::new)));
+                    readerGlasovi.lines().skip(1).filter(l -> !l.isBlank()).map(l -> {
+                        String[] values = l.split(";");
+                        if (values[2].equalsIgnoreCase("Svet")) {
+                            return new LocenGlas(values[2], values[3], Integer.parseInt(values[4]), Integer.parseInt(values[5]), 0);
+                        }
+                        if (values[5].isEmpty() || values[6].isEmpty()) {
+                            return new Glas(values[2], values[3], Integer.parseInt(values[4]));
+                        }
+                        return new LocenGlas(values[2], values[3], Integer.parseInt(values[4]), Integer.parseInt(values[5]), Integer.parseInt(values[6]));
+                    }).collect(Collectors.toCollection(ArrayList::new)));
         } catch (FileNotFoundException e) {
             return null;
         } catch (IOException e) {
