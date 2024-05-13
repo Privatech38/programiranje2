@@ -19,11 +19,11 @@ public class ZgodovinaTekmovanj {
     }
 
     public float povprecnaUvrstitev(String drzava) {
-        return (float) this.seznamTekmovanj.stream().mapToDouble(t -> t.getMesto(drzava)).average().getAsDouble();
+        return (float) this.seznamTekmovanj.stream().mapToInt(t -> t.getMesto(drzava)).filter(i -> i > 0).average().getAsDouble();
     }
 
     public int najboljsaUvrstitev(String drzava) {
-        return this.seznamTekmovanj.stream().mapToInt(t -> t.getMesto(drzava)).min().getAsInt();
+        return this.seznamTekmovanj.stream().mapToInt(t -> t.getMesto(drzava)).filter(i -> i > 0).min().getAsInt();
     }
 
     public void izpisiPobrateneDrzave(int topN) {
