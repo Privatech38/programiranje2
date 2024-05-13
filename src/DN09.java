@@ -1,5 +1,6 @@
 import dn09.Tekmovanje;
 import dn09.UtezeniKriterij;
+import dn09.ZgodovinaTekmovanj;
 
 public class DN09 {
 
@@ -21,6 +22,7 @@ public class DN09 {
                 tekmovanje.setKriterij(new UtezeniKriterij(Float.parseFloat(args[4]), Float.parseFloat(args[5])));
                 tekmovanje.izpisiRezultateUrejeno(Integer.parseInt(args[3]));
             }
+            case "pobratene" -> ZgodovinaTekmovanj.izDatotek(args[1], args[2]).izpisiPobrateneDrzave(Integer.parseInt(args[3]));
         }
     }
 
