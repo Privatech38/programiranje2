@@ -42,7 +42,7 @@ public class ZgodovinaTekmovanj {
              BufferedReader readerGlasovi = new BufferedReader(new FileReader(datotekaGlasovi))) {
             Map<String, List<String>> tekmovalci = readerTekmovalci.lines().skip(1).filter(l -> !l.isBlank()).collect(Collectors.groupingBy(l -> l.split(";")[0]));
             Map<String, List<String>> glasovi = readerGlasovi.lines().skip(1).filter(l -> !l.isBlank()).collect(Collectors.groupingBy(l -> l.split(";")[0] + ";" + l.split(";")[1]));
-            return new ZgodovinaTekmovanj(glasovi.entrySet().stream()
+            return new ZgodovinaTekmovanj(glasovi.entrySet().stream().sorted(Comparator.comparingInt(e -> Integer.parseInt(e.getKey().split(";")[0])))
                     .map(e -> new Tekmovanje(tekmovalci.get(e.getKey().split(";")[0]).stream().map(l -> new Tekmovalec(l.split(";")[1], l.split(";")[2], l.split(";")[3])).collect(Collectors.toCollection(ArrayList::new)),
                             e.getValue().stream().map(l -> {
                                 String[] values = l.split(";");
