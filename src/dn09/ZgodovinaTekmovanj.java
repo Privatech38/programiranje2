@@ -28,11 +28,13 @@ public class ZgodovinaTekmovanj {
 
     public void izpisiPobrateneDrzave(int topN) {
         System.out.println("Drzave z najvec medsebojnih glasov:");
-        this.seznamTekmovanj.stream().flatMap(t -> t.getSeznamGlasov().stream()).collect(Collectors.groupingBy(g -> new HashSet<>(List.of(g.getOdDrzave(), g.getZaDrzavo())))).entrySet()
+        List<String> seznam = this.seznamTekmovanj.stream().flatMap(t -> t.getSeznamGlasov().stream()).collect(Collectors.groupingBy(g -> new HashSet<>(List.of(g.getOdDrzave(), g.getZaDrzavo())))).entrySet()
                 .stream().map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue().stream().mapToInt(Glas::getStTock).sum())).sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue())).limit(topN)
                 .map(e -> new AbstractMap.SimpleEntry<>(e.getKey().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList()), e.getValue()))
-                .forEach(e -> System.out.printf("%s <-(%dt)-> %s\n", e.getKey().get(0), e.getValue(), e.getKey().get(1)));
-
+                .map(e -> String.format("%s <-(%dt)-> %s\n", e.getKey().get(0), e.getValue(), e.getKey().get(1))).toList();
+        for (int i = 0; i < seznam.size(); i++) {
+            System.out.print(i + 1 + ". " + seznam.get(i)); // God damn it Oracle, zakaj ni for each with index
+        }
     }
 
     public static ZgodovinaTekmovanj izDatotek(String datotekaTekmovalci, String datotekaGlasovi) {
