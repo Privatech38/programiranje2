@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DN09 {
 
@@ -281,9 +282,10 @@ public class DN09 {
 
         public void izpisiPobrateneDrzave(int topN) {
             System.out.println("Drzave z najvec medsebojnih glasov:");
-            List<String> seznam = this.seznamTekmovanj.stream().flatMap(t -> t.getSeznamGlasov().stream()).collect(Collectors.groupingBy(g -> new HashSet<>(List.of(g.getOdDrzave(), g.getZaDrzavo())))).entrySet()
-                    .stream().map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue().stream().mapToInt(Glas::getStTock).sum())).sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue())).limit(topN)
-                    .map(e -> new AbstractMap.SimpleEntry<>(e.getKey().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList()), e.getValue()))
+            List<String> seznam = this.seznamTekmovanj.stream().flatMap(t -> t.getSeznamGlasov().stream())
+                    .collect(Collectors.groupingBy(g -> Stream.of(g.getOdDrzave(), g.getZaDrzavo()).sorted(Comparator.naturalOrder()).toList())).entrySet()
+                    .stream().map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue().stream().mapToInt(Glas::getStTock).sum()))
+                    .sorted(Comparator.<Map.Entry<List<String>, Integer>>comparingInt(Map.Entry::getValue).reversed().thenComparing((e1, e2) -> e2.getKey().get(0).compareTo(e1.getKey().get(0)))).limit(topN)
                     .map(e -> String.format("%s <-(%dt)-> %s\n", e.getKey().get(0), e.getValue(), e.getKey().get(1))).toList();
             for (int i = 0; i < seznam.size(); i++) {
                 System.out.print(i + 1 + ". " + seznam.get(i)); // God damn it Oracle, zakaj ni for each with index
