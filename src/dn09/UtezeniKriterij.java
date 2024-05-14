@@ -22,14 +22,5 @@ public class UtezeniKriterij implements Kriterij {
                     .mapToDouble(lg -> lg.getStTockGlasovi() * utezGlasovanja + lg.getStTockZirija() * utezZirije).sum());
         }
         return (int) Math.round(glasovi.stream().mapToDouble(g -> g.getStTock() * utezZirije).sum());
-
-//        double sum = 0.0d;
-//        for (Glas glas : tekmovanje.getSeznamGlasov().stream().filter(g -> g.getZaDrzavo().equalsIgnoreCase(drzava)).collect(Collectors.toSet())) {
-//            if (glas instanceof LocenGlas locenGlas) {
-//                sum += locenGlas.getStTockGlasovi() * utezGlasovanja + locenGlas.getStTockZirija() * utezZirije;
-//            }
-//            sum += glas.getStTock() * utezZirije;
-//        }
-//        return (int) Math.round(sum);
     }
 }
